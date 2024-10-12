@@ -15,7 +15,12 @@ $(function() {
         } else if (data.key == "Enter") { // Enter key
             $.post('https://qb-radio/joinRadio', JSON.stringify({
                 channel: $("#channel").val()
-            }));
+            })).then((data) => {
+                if (data.canacces) {
+                    $("#channel").val(data.channel)
+                }
+            });
+            $()
         }
     };
 });
@@ -27,7 +32,11 @@ $(document).on('click', '#submit', function(e){
 
     $.post('https://qb-radio/joinRadio', JSON.stringify({
         channel: $("#channel").val()
-    }));
+    })).then((data) => {
+        if (data.canacces) {
+            $("#channel").val(data.channel)
+        }
+    });
 });
 
 $(document).on('click', '#disconnect', function(e){
@@ -41,7 +50,7 @@ $(document).on('click', '#volumeUp', function(e){
 
     $.post('https://qb-radio/volumeUp', JSON.stringify({
         channel: $("#channel").val()
-    }));
+    }))
 });
 
 $(document).on('click', '#volumeDown', function(e){
@@ -52,21 +61,56 @@ $(document).on('click', '#volumeDown', function(e){
     }));
 });
 
-$(document).on('click', '#decreaseradiochannel', function(e){
-    e.preventDefault();
-
-    $.post('https://qb-radio/decreaseradiochannel', JSON.stringify({
-        channel: $("#channel").val()
-    }));
-});
 
 $(document).on('click', '#increaseradiochannel', function(e){
     e.preventDefault();
 
     $.post('https://qb-radio/increaseradiochannel', JSON.stringify({
         channel: $("#channel").val()
-    }));
+    })).then((data) => {
+        if (data.canacces) {
+            $("#channel").val(data.channel)
+        }
+        let currentValue = parseFloat($("#channel").val()) || 1; // Default to 1 if the input is empty or invalid
+    
+        // Check if the value is an integer or a float
+        if (Number.isInteger(currentValue)) {
+            if (currentValue < 500) {
+                $("#channel").val(currentValue + 1); // Increment by 1 if it's an integer
+            }
+        } else {
+            if (currentValue < 500) {
+                $("#channel").val((currentValue + 0.01).toFixed(2)); // Increment by 0.01 if it's a float, keeping 2 decimals
+            }
+        }
+    });
 });
+
+$(document).on('click', '#decreaseradiochannel', function(e){
+    e.preventDefault();
+
+    $.post('https://qb-radio/decreaseradiochannel', JSON.stringify({
+        channel: $("#channel").val()
+    })).then((data) => {
+        if (data.canacces) {
+            $("#channel").val(data.channel)
+        }
+        let currentValue = parseFloat($("#channel").val()) || 1; // Default to 1 if the input is empty or invalid
+    
+        // Check if the value is an integer or a float
+        if (Number.isInteger(currentValue)) {
+            if (currentValue > 1) {
+                $("#channel").val(currentValue - 1); // Decrement by 1 if it's an integer
+            }
+        } else {
+            if (currentValue > 1) {
+                $("#channel").val((currentValue - 0.01).toFixed(2)); // Decrement by 0.01 if it's a float, keeping 2 decimals
+            }
+        }
+    });
+    
+});
+
 
 $(document).on('click', '#poweredOff', function(e){
     e.preventDefault();
